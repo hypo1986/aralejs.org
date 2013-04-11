@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <title>Arale - 开发一个 Arale 模块</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="nico 0.2.3" />
+    <link type="image/x-icon" href="../static/css/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="../static/css/normalize.css" />
+    <link rel="stylesheet" href="../static/css/site.css" />
+    <link rel="stylesheet" href="../static/css/solarized.css" />
+    <script src="http://static.alipayobjects.com/seajs/1.3.1/sea.js"></script>
+    <script src="../static/js/arale-helper.js"></script>
+    <script src="../static/js/site.js"></script><script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36247332-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = 'https://ssl.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<script>
+  (function() {
+    var data;
+    seajs._package = data = {"name":"Arale","version":"0.0.1","root":"","description":"{ 基于 SeaJS 的前端解决方案，随<span class='heart'>❤</span>构建互联网应用 }","homepage":"http://aralejs.org","repository":{"type":"git","url":"https://github.com/aralejs/aralejs.org"},"bugs":{"url":"https://github.com/aralejs/aralejs.org/issues"}}
+
+    if (data.spm && data.spm.alias) {
+      delete data.spm.alias['$']
+      seajs.config({ alias: data.spm.alias})
+    } else {
+      data.dependencies && (delete data.dependencies['$'])
+      seajs.config({ alias: data.dependencies })
+    }
+
+    seajs.config({ alias: {} })
+
+    // for alice
+    for(var dep in data.dependencies) {
+        // 如果依赖的是样式模块
+        if (data.dependencies[dep].indexOf('.css') > 0) {
+            seajs.use(dep);
+        }
+    }
+  })();
+</script>
+    <!--[if lt IE 9]>
+    <script src="../static/js/html5shiv.js"></script>
+    <![endif]-->
+    
+<link rel="stylesheet" href="../static/style.css" />
+<script src="../static/index.js"></script>
+
+  </head>
+  <body>
+    <div id="body-wrapper">
+      
+<div id="title-wrapper">            
+  <h1 id="title" class="inline">
+    <a href="../">Arale</a>
+  </h1>
+  <input type="text" class="inline" id="search" placeholder="搜索 Arale 模块">
+  <p id="description">{ 基于 SeaJS 的前端解决方案，随<span class='heart'>❤</span>构建互联网应用 }</p>
+</div>
+<div id="main-wrapper">
+  <div class="main-block" id="document-wrapper">
+    <div>
+      <h2>Document</h2>
+      <ol id="sidenav">
+        <li><a href="../docs/about-arale.html">关于 Arale</a></li>
+        <li><a href="../docs/getting-started.html">5 分钟快速上手</a></li>
+        <li><a href="../docs/develop-components.html">开发一个 Arale 模块</a></li>
+        <li><a href="../docs/online-status.html">模块线上状态</a></li>
+        <li><a href="../docs/rules.html">开发规范</a></li>
+        <li><a href="../docs/alice.html">Alice 样式解决方案</a></li>
+        <li><a href="../contributing.html">加入我们</a></li>
+      </ol>
+    </div>
+    <div style="display:none" id="J-alipay">
+      <h2>Alipay</h2>
+      <ol id="sidenav">
+        <li><a href="../docs/alipay-overview.html">支付宝入门指南</a></li>
+      </ol>
+    </div>
+  </div>
+  <div class="main-block" id="doc-wrapper">
+    <h1>开发一个 Arale 模块</h1>
+    <div id="content"><h3 id="%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3">相关文档</h3>
+<ol>
+<li>基于 widget 开发组件 (TODO)</li>
+<li><a href="https://github.com/alipay/totoro/wiki">测试解决方案</a></li>
+<li><a href="http://aralejs.org/docs/rules.html">开发规范</a></li>
+</ol>
+
+<hr/>
+
+<p>这个教程会简单说明一个组件的开发流程，通过<a href="http://puzzle.chuo.me/examples/">一个示例</a>让你有切身体会，你也可以跟着一起做哦。</p>
+
+<p>源码地址为：<a href="https://github.com/popomore/puzzle">https://github.com/popomore/puzzle</a></p>
+<h2 id="%E5%AE%89%E8%A3%85">安装</h2>
+<p>首先需要<a href="https://github.com/spmjs/spm/wiki/%E5%AE%89%E8%A3%85">安装 spm</a>。</p>
+
+<pre>npm install spm@1.7.7 -g
+</pre>
+<h3 id="git">git</h3>
+<p>Arale 代码使用 git 做版本控制工具，下载地址如下</p>
+
+<ul>
+<li><p><a href="http://code.google.com/p/git-osx-installer/">git for mac</a></p></li>
+<li><p><a href="http://code.google.com/p/msysgit/">git for windows </a></p></li>
+</ul>
+
+<p>对 git 不熟的可以看下这个<a href="http://rogerdudler.github.com/git-guide/index.zh.html">简易指南</a></p>
+<h3 id="nico">nico</h3>
+<p>安装文档工具，如果是 Window 用户查看<a href="https://github.com/aralejs/nico-arale#3-%E5%AE%89%E8%A3%85-arale-theme">其他安装方法</a>。</p>
+
+<pre>curl https:&#47;&#47;raw.github.com&#47;aralejs&#47;nico-arale&#47;master&#47;bootstrap.sh | sudo sh
+</pre>
+
+<p>如出现错误可先查看是否配置了 <code>PATH</code> 和 <code>NODE_PATH</code>，可以用 <a href="https://github.com/creationix/nvm">nvm</a> 做 node 管理。</p>
+<h2 id="%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BB%84%E4%BB%B6%E9%A1%B9%E7%9B%AE">初始化组件项目</h2>
+<p>组件和目录的名称要符合 [a-z\d-]，并以英文字母开头，首选合适的英文单词，**禁止使用驼峰**。</p>
+
+<p>先来看看整个组件的结构，这样会有一个直观的感受。</p>
+
+<pre>puzzle
+  -- docs                   markdown 文档，除了 README 的其他文档
+       -- overlay.md
+       -- dialog.md
+  -- examples               例子
+       -- assets            例子中如果有用到 img 等资源时，存放在该目录
+            -- test.png
+       -- index.md
+       -- dialog.md
+  -- src                    存放 js, css 文件
+       -- overlay.css
+       -- overlay.js
+       -- dialog.js
+  -- tests                  单元测试
+       -- overlay-spec.js
+       -- dialog-spec.js
+  -- sea-modules            spm install 生成，存放依赖的其他组件
+  -- _site                  nico 生成，存放站点
+  -- HISTORY.md             版本更新说明
+  -- README.md              组件总体说明
+  -- package.json           版本等元信息
+  -- .gitignore             git 忽略某些文件
+  -- .travis.yml            travis 持续集成的配置
+</pre>
+
+<p>那我们初始化一个项目看看</p>
+
+<pre>$ mkdir puzzle
+$ cd puzzle
+$ spm init
+prompt: Please select module type:
+1: -&gt; arale(arale module template):  1
+prompt: Define value for property &#39;root&#39;: :  arale
+prompt: Define value for property &#39;name&#39;: :  puzzle
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;examples&#47;index.md
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;.gitignore
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;Makefile
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;package.json
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;README.md
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;src&#47;puzzle.js
+&gt;&gt;&gt; GENERATE &#47;Users&#47;popomore&#47;tmp&#47;overlay&#47;tests&#47;puzzle-spec.js
+</pre>
+
+<p>初始化的时候需要选择模板，root 为 arale，name 为组件名。初始化完成后会生成一个骨架，在这个基础上进行开发更方便，之后可以提交到版本库了，当然你可以在 github 上建一个。</p>
+
+<pre>git init
+git add .
+git commit -m &#39;init&#39;
+git remote add origin git@github.com:popomore&#47;puzzle.git
+git push origin master
+</pre>
+<h2 id="%E8%BF%9B%E8%A1%8C%E5%BC%80%E5%8F%91">进行开发</h2>
+<p>首先分析组件的依赖，比如 <code>puzzle</code> 需要 <code>popup</code>。</p>
+
+<p>根据 ID 规则要查看 <code>widget</code> 的版本，使用 <code>spm search</code> 的时候也要加 root 哦。</p>
+
+<pre>$ spm search arale.popup
+popup:
+  versions:
+    0.9.9:
+      - popup.js
+    0.9.10:
+      - popup.js
+    0.9.11:
+      - popup.js
+</pre>
+
+<p>在 <code>package.json</code> 中添加依赖</p>
+
+<pre>&quot;dependencies&quot;: {
+    &quot;$&quot;: &quot;$&quot;,
+    &quot;popup&quot;: &quot;arale&#47;popup&#47;0.9.11&#47;popup&quot;
+}
+</pre>
+
+<p><strong>注意：</strong> <code>package.json</code> 为 json 文件，需要用双引号才合法，可以查看<a href="https://github.com/spmjs/spm/wiki/package.json">详细配置</a>。</p>
+
+<p>使用 <code>spm install</code> 下载依赖，会把 dependencies 配置的组件都下载到 sea-modules 下。<code>jquery</code> 配置为 $ 是因为使用了别名配置，不需要完整的依赖路径。</p>
+
+<pre>$ spm install
+</pre>
+
+<p>修改 <code>src/puzzle.js</code> 进行开发</p>
+
+<pre>define(function(require, exports, module) {
+  var popup = require(&#39;popup&#39;),
+    $ = require(&#39;$&#39;);
+  var puzzle = function(){};
+  module.exports = puzzle;
+});
+</pre>
+
+<p>启服务进行调试</p>
+
+<pre>$ make debug
+</pre>
+
+<p>通过浏览器访问 <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a></p>
+<h2 id="%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95">本地调试</h2>
+<p>examples 也使用 md 编写，这样写起来非常方便，除了基本的 markdown 语法还支持<a href="https://github.com/aralejs/nico-arale#%E6%96%87%E6%A1%A3%E7%BC%96%E8%BE%91">额外的特性</a>。</p>
+
+<p>在 <code>examples/index.md</code> 添加实例化代码，puzzle 已添加别名，可以直接 use。</p>
+
+<pre>````javascript
+seajs.use(&#39;puzzle&#39;, function(Puzzle) {
+
+});
+````
+</pre>
+
+<p>nico 支持 livereload，只要通过 <code>make debug</code> 或 <code>make watch</code> 启动服务，修改文件后都会自动构建和刷新浏览器。</p>
+
+<p><a href="https://github.com/aralejs/nico-arale#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">查看 Makefile 的配置</a></p>
+<h2 id="%E7%BC%96%E5%86%99%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B">编写测试用例</h2>
+<p>Arale 提供 <a href="https://github.com/alipay/totoro/wiki/mocha">mocha</a> 作为测试框架，开发者只要关注如何写好测试用例。</p>
+
+<p>修改 <code>package.json</code> 配置哪些文件需要测试，通过 <strong>命名 + &#39;-spec.js&#39;</strong> 拼装去找文件。</p>
+
+<pre>&quot;tests&quot;: [&quot;puzzle&quot;]
+</pre>
+
+<p>修改 <code>tests/puzzle-spec.js</code> 文件，开始写测试用例，可以直接看<a href="https://github.com/popomore/puzzle/blob/master/tests/puzzle-spec.js">示例</a>。</p>
+
+<p><a href="https://github.com/alipay/totoro/wiki/unit-testing-quick-start">详细文档请看</a></p>
+
+<p>访问 <a href="http://127.0.0.1:8000/tests/runner.html">http://127.0.0.1:8000/tests/runner.html</a> 查看是否正确。</p>
+
+<p>Arale 已经配置 travis，只要开通就可以**持续集成**。<a href="https://travis-ci.org/profile">登录 travis</a>，开启 travis。</p>
+<h2 id="%E9%83%A8%E7%BD%B2%E6%96%87%E4%BB%B6">部署文件</h2>
+<p>修改 <code>package.json</code> 配置打包方式</p>
+
+<pre>&quot;output&quot;: {
+    &quot;puzzle.js&quot;: &quot;.&quot;
+}
+</pre>
+
+<p><code>&#39;.&#39;</code> 意味着只打包组件内部的文件（包括依赖的文件），由于 puzzle.js 没有依赖所以就相当于 <code>&quot;puzzle.js&quot;: [&quot;puzzle.js&quot;]</code>。</p>
+
+<p>最常用的为以下三种，具体配置的参数可查看<a href="https://github.com/spmjs/spm/wiki/package.json-:-output">文档</a>。</p>
+
+<pre>{
+    &quot;a.js&quot;: &quot;.&quot;,  &#47;&#47; 将依赖组件内部的文件打包成一个文件
+    &quot;b.js&quot;: &quot;*&quot;,  &#47;&#47; 将所有依赖的文件打包成一个文件
+    &quot;c.js&quot;: [&quot;c.js&quot;, &quot;d.js&quot;]  &#47;&#47; 将指定文件打包成一个
+}
+</pre>
+
+<p>开始打包，build 后会在 dist 目录生成打包的文件和 -debug 文件。</p>
+
+<pre>$ spm build
+</pre>
+
+<p>查看 <a href="https://github.com/spmjs/spm/wiki/%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0">build 参数</a>进行定制</p>
+
+<p>上传到源</p>
+
+<pre>$ spm upload
+</pre>
+
+<p>部署到服务器，请参见 <a href="https://github.com/spmjs/spm/wiki/spm-deploy">spm-deploy</a>。</p>
+
+<pre>$ spm deploy
+</pre>
+<h2 id="%E9%83%A8%E7%BD%B2%E7%BB%84%E4%BB%B6%E6%96%87%E6%A1%A3">部署组件文档</h2>
+<p>Arale 组件的文档地址为 aralejs.org/{{模块名}}，
+开发完毕后请 push 到 <a href="https://github.com/aralejs">https://github.com/aralejs</a> 下，并绑定 hook 为
+<a href="http://aralejs.org/-update/%7B%7B%E6%A8%A1%E5%9D%97%E5%90%8D%7D%7D">http://aralejs.org/-update/{{模块名}}</a> 。这样只要 push 后文档会自动更新到位。</p>
+
+<p>其他组件的文档地址在内网：arale.alipay.im/{{模块root}}/{{模块名}}，比如
+<code>alipay.xbox</code> 的文档地址为 <code>http://arale.alipay.im/alipay/xbox/</code> 。</p>
+
+<p>开发完组件后，只需要把目录下的<code>Makefile</code>中的<code>make publish</code>这段换成如下代码：</p>
+
+<pre>name = `cat package.json | grep \&quot;name\&quot; | awk -F&#39;&quot;&#39; &#39;{print $$4}&#39;`
+root = `cat package.json | grep \&quot;root\&quot; | awk -F&#39;&quot;&#39; &#39;{print $$4}&#39;`
+html = _site
+tmpfile = tmp.tar.gz
+publish:
+    @git pull origin master
+    @nico build -v -C $(THEME)&#47;nico.js
+    @rm -f ${tmpfile}
+    @tar --exclude=&#39;.git&#47;*&#39; -czf ${tmpfile} ${html}
+    @curl -F name=${name} -F file=@${tmpfile} http:&#47;&#47;arale.alipay.im&#47;repository&#47;upload&#47;${root}
+    @rm -f ${tmpfile}
+</pre>
+
+<p>然后使用如下命名就可以把文档部署到对应地址了。</p>
+
+<pre>$ make publish
+</pre>
+
+<blockquote>
+<p>注意，Makefile文件 的缩进一律用 Tab，否则会报错。</p>
+</blockquote>
+</div>
+  </div>
+</div>
+
+    </div>
+    <div id="footer-wrapper">
+      <footer>
+        <p class="powered">
+<script type="text/javascript" charset="utf-8">
+(function(){
+  var _w = 72 , _h = 16;
+  var param = {
+    url:location.href,
+    type:'3',
+    count:'1', /**是否显示分享数，1显示(可选)*/
+    appkey:'', /**您申请的应用appkey,显示分享来源(可选)*/
+    title:'', /**分享的文字内容(可选，默认为所在页面的title)*/
+    pic:'http://aralejs.org/static/arale.png', /**分享图片的路径(可选)*/
+    ralateUid:'', /**关联用户的UID，分享微博会@该用户(可选)*/
+	language:'zh_cn', /**设置语言，zh_cn|zh_tw(可选)*/
+    rnd:new Date().valueOf()
+  }
+  var temp = [];
+  for( var p in param ){
+    temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
+  }
+  document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://hits.sinajs.cn/A1/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
+})()
+</script>
+<a href="http://aralejs.org">Arale</a> •
+<a href="http://aliceui.org">Alice</a> •
+<a href="http://seajs.org">SeaJS</a> •
+<a href="https://github.com/spmjs/spm">spm</a> •
+<a href="http://lab.lepture.com/nico/">nico</a>
+
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
